@@ -4,6 +4,7 @@ from django.db import models
 # Create your models here.
 
 class Book(models.Model):
+    id = models.CharField(primary_key=True, max_length=100, null=False, blank=False)
     title = models.CharField(max_length=100, null=False, blank=False)
     authors = models.CharField(max_length=250, null=True, blank=True)
     published_date = models.CharField(max_length=30 , null=True, blank=True)

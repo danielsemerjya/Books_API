@@ -1,6 +1,4 @@
 import requests
-import json
-from django.utils.dateparse import parse_date
 
 def get_bookdata_from_web(dataset_name):
     url = 'https://www.googleapis.com/books/v1/volumes?q=Hobbit'
@@ -10,7 +8,9 @@ def get_bookdata_from_web(dataset_name):
     books_data = []
     for data in books:
         volume_info = data.get('volumeInfo')
-        book_info = dict(title=volume_info.get('title'),
+        id = data.get('id')
+        book_info = dict(id=id,
+                        title=volume_info.get('title'),
                         authors=volume_info.get('authors'),
                         published_date=volume_info.get('publishedDate'),
                         categories=volume_info.get('categories'),

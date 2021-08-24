@@ -8,30 +8,6 @@ from rest_framework.response import Response
 from .utils import get_bookdata_from_web
 
 
-class LoadData(APIView):
-
-    def post(self, request):
-        Book.objects.all().delete()
-        data = request.data['q']
-        if data == "war":
-            books = get_bookdata_from_web(data)
-            for record in books:
-                if Book.objects.filter(title=record.get('title'),
-                        published_date=record.get('published_date')).count() == 0:
-                    serializer = BookSerializer(data=record)
-                    if serializer.is_valid():
-                        serializer.save()
-                        print('Nowy wpis')
-        return Response(status=status.HTTP_200_OK)
-
-
-class BookView(generics.RetrieveAPIView):
-    serializer_class = BookSerializer
-
-    def get_queryset(self):
-        return Book.objects.filter(id=self.kwargs['pk'])
-
-
 class BookListView(generics.ListAPIView):
 
     queryset = Book.objects.all()
@@ -45,7 +21,39 @@ class BookListView(generics.ListAPIView):
             authors = self.request.query_params.getlist('author')
             values = []
             for author in authors:
+                if author[0] and author[-1] == '"':
+                    author = author[1:-1]
                 values.append("['"+author+"']")
             return Book.objects.filter(authors__in=values)
         else:
             return self.queryset
+
+
+class BookView(generics.RetrieveAPIView):
+
+    serializer_class = BookSerializer
+
+    def get_queryset(self):
+        queryset = Book.objects.filter(id=self.kwargs['pk'])
+        if queryset.exists():
+            return queryset
+
+
+class LoadData(APIView):
+
+    def post(self, request):
+
+        q = request.data.get('q')
+        if q == "war":
+            Book.objects.all().delete()
+            books = get_bookdata_from_web(q)
+            for record in books:
+                if Book.objects.filter(id=record.get('id')).count() == 0:
+                    serializer = BookSerializer(data=record)
+                    if serializer.is_valid():
+                        serializer.save()
+                    else:
+                        return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
+            return Response(books, status.HTTP_201_CREATED)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)

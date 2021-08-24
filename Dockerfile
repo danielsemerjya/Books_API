@@ -11,8 +11,9 @@ RUN pip install -r requirements.txt
 
 COPY . /code
 
-## Comment below for local version
-# EXPOSE 8000
-# CMD ["gunicorn", "--bind", ":8000", "--workers", "3", "core.wsgi.application"]
+## Local version
+#EXPOSE 8000
+#CMD ["gunicorn", "--bind", ":8000", "--workers", "3", "STX_Semerjyan.wsgi:application", "--reload"]
 
-CMD gunicorn STX_Semerjyan.wsgi:application --bind 0.0.0.0:$PORT
+## Heroku version
+CMD gunicorn STX_Semerjyan.wsgi:application --bind 0.0.0.0:$PORT --reload
