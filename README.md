@@ -14,3 +14,14 @@ Endpoints based on instruction, with prefix /api
 - Django
 - Django rest framework
 - Docker
+  
+## Running app locally
+
+At branch production the Books_API are stored with configuration for Heroku deployment.
+If user want to run the Books_API locally on PC, should make change in file:
+  Books_API/STX_Semerjyan/settings/__init__.py to replace commented line:
+```
+  # from .settings import *
+  from .localdev import *
+  ```
+Next user should [create Docker image and run it](https://docs.docker.com/engine/reference/commandline/build/). 
